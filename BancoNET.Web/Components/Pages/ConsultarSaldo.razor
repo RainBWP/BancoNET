@@ -1,0 +1,65 @@
+﻿@page "/consultar-saldo"
+@inject BancoApiClient BancoApiClient
+
+<h3>Consultar Saldo</h3>
+
+<EditForm Model="consulta" OnValidSubmit="OnConsultarSaldo">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="id">Account ID:</label>
+        <InputNumber id="id" @bind-Value="consulta.Id" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <InputText id="password" @bind-Value="consulta.Password" type="password" />
+    </div>
+
+    <button type="submit">Consultar Saldo</button>
+</EditForm>
+
+@if (saldo.HasValue)
+{
+    <h3>Bienvenido @nombre</h3>
+    <p>Saldo: @saldo.Value</p>
+}
+else if (errorMessage != null)
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private ConsultaSaldoModel consulta = new ConsultaSaldoModel();
+    private decimal? saldo;
+    private string? errorMessage;
+	private string? nombre;
+
+	private async Task OnConsultarSaldo()
+    {
+        errorMessage = null;
+        saldo = null;
+
+        var result = await BancoApiClient.ConsultarSaldoAsync(consulta.Id, consulta.Password);
+        if (result.HasValue)
+        {
+            saldo = result.Value;
+        }
+        else
+        {
+            errorMessage = "Error al consultar el saldo. Verifique los datos ingresados.";
+        }
+
+		nombre = await BancoApiClient.ObtenerNombreAsync(consulta.Id, consulta.Password);
+		if (string.IsNullOrEmpty(nombre))
+		{
+			errorMessage = "Error al consultar el nombre. Verifique los datos ingresados.";
+		}
+	}
+
+    public class ConsultaSaldoModel
+    {
+        public int Id { get; set; }
+        public string Password { get; set; } = string.Empty;
+    }
+}

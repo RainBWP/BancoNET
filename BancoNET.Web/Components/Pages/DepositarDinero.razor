@@ -1,0 +1,126 @@
+﻿@page "/depositar-dinero"
+@inject BancoApiClient BancoApiClient
+
+<h3>Sacar Dinero</h3>
+
+<EditForm Model="depositarDineroModel" OnValidSubmit="OnDepositarDinero">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="id">Account ID:</label>
+        <InputNumber id="id" @bind-Value="depositarDineroModel.Id" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <InputText id="password" @bind-Value="depositarDineroModel.Password" type="password" />
+    </div>
+    <div>
+        <label for="cantidad">Cantidad:</label>
+        <InputNumber id="cantidad" @bind-Value="depositarDineroModel.Cantidad" />
+    </div>
+
+    <button type="submit">Sacar Dinero</button>
+</EditForm>
+
+@if (nombre != null)
+{
+	<h3>Bienvenido @nombre</h3>
+})
+else if (errorMessage != null)
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@if (saldo.HasValue)
+{
+	<p>Anterior Saldo: @saldo.Value</p>
+}
+else if (errorMessage != null)
+{
+	<p style="color:red">@errorMessage</p>
+}
+
+@if (successMessage != null)
+{
+	<h3>@successMessage</h3>
+    <p style="color:green">@successMessage</p>
+}
+else if (errorMessage != null)
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@if (saldo.HasValue)
+{
+	<p>Nuevo Saldo: @saldo.Value</p>
+}
+else if (errorMessage != null)
+{
+	<p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private DepositarDineroModel depositarDineroModel = new DepositarDineroModel();
+    private string? successMessage;
+    private string? errorMessage;
+
+    private ConsultaSaldoModel consulta = new ConsultaSaldoModel();
+    private decimal? saldo;
+    private string? nombre;
+
+    private async Task OnDepositarDinero()
+    {
+        errorMessage = null;
+        successMessage = null;
+
+        nombre = await BancoApiClient.ObtenerNombreAsync(consulta.Id, consulta.Password);
+        if (string.IsNullOrEmpty(nombre))
+        {
+            errorMessage = "Error al consultar el nombre. Verifique los datos ingresados.";
+        }
+
+        var result1 = await BancoApiClient.ConsultarSaldoAsync(consulta.Id, consulta.Password);
+        if (result1.HasValue)
+        {
+            saldo = result1.Value;
+        }
+        else
+        {
+            errorMessage = "Error al consultar el saldo. Verifique los datos ingresados.";
+        }
+
+        var result = await BancoApiClient.IngresarDineroAsync(depositarDineroModel.Id, depositarDineroModel.Password, depositarDineroModel.Cantidad.ToString());
+        if (result)
+        {
+            successMessage = "Dinero Depositado con éxito.";
+        }
+        else
+        {
+            errorMessage = "Error al retirar el dinero. Verifique los datos ingresados.";
+        }
+
+        var result2 = await BancoApiClient.ConsultarSaldoAsync(consulta.Id, consulta.Password);
+        if (result2.HasValue)
+        {
+            saldo = result2.Value;
+        }
+        else
+        {
+            errorMessage = "Error al consultar el saldo. Verifique los datos ingresados.";
+        }
+    }
+
+    public class DepositarDineroModel
+    {
+        public int Id { get; set; }
+        public string Password { get; set; } = string.Empty;
+        public decimal Cantidad { get; set; }
+    }
+
+    public class ConsultaSaldoModel
+    {
+        public int Id { get; set; }
+        public string Password { get; set; } = string.Empty;
+    }
+}
