@@ -3,7 +3,7 @@
 
 <h3>Consultar Saldo</h3>
 
-<EditForm Model="consulta" OnValidSubmit="OnConsultarSaldo">
+<EditForm Model="consulta" OnValidSubmit="OnConsultarSaldo" FormName="ConsultarSaldo">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -33,29 +33,35 @@ else if (errorMessage != null)
     private ConsultaSaldoModel consulta = new ConsultaSaldoModel();
     private decimal? saldo;
     private string? errorMessage;
-	private string? nombre;
+    private string? nombre;
 
-	private async Task OnConsultarSaldo()
+    private async Task OnConsultarSaldo()
     {
         errorMessage = null;
         saldo = null;
 
-        var result = await BancoApiClient.ConsultarSaldoAsync(consulta.Id, consulta.Password);
-        if (result.HasValue)
+        try
         {
-            saldo = result.Value;
+            var result = await BancoApiClient.ConsultarSaldoAsync(consulta.Id, consulta.Password);
+            if (result.HasValue)
+            {
+                saldo = result.Value;
+                nombre = await BancoApiClient.ObtenerNombreAsync(consulta.Id, consulta.Password);
+                if (string.IsNullOrEmpty(nombre))
+                {
+                    errorMessage = "Error al consultar el nombre. Verifique los datos ingresados.";
+                }
+            }
+            else
+            {
+                errorMessage = "Error al consultar el saldo. Verifique los datos ingresados.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            errorMessage = "Error al consultar el saldo. Verifique los datos ingresados.";
+            errorMessage = $"Ocurrió un error: {ex.Message}";
         }
-
-		nombre = await BancoApiClient.ObtenerNombreAsync(consulta.Id, consulta.Password);
-		if (string.IsNullOrEmpty(nombre))
-		{
-			errorMessage = "Error al consultar el nombre. Verifique los datos ingresados.";
-		}
-	}
+    }
 
     public class ConsultaSaldoModel
     {

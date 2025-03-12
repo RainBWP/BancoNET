@@ -3,23 +3,14 @@ using System.Net.Http.Json;
 
 namespace BancoNET.Web
 {
-    public class BancoApiClient
+    public class BancoApiClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = httpClient;
 
-        public BancoApiClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
-        public async Task<Cuenta?> BuscarCuentaAsync(int id)
+        public async Task<bool> BuscarCuentaAsync(int id)
         {
             var response = await _httpClient.GetAsync($"/buscarcuenta/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<Cuenta>();
-            }
-            return null;
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<decimal?> ConsultarSaldoAsync(int id, string password)
@@ -34,19 +25,19 @@ namespace BancoNET.Web
 
         public async Task<bool> SacarDineroAsync(int id, string password, string cantidad)
         {
-            var response = await _httpClient.PostAsync($"/sacardinero/{id}/{password}/{cantidad}", null);
+            var response = await _httpClient.GetAsync($"/sacardinero/{id}/{password}/{cantidad}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> IngresarDineroAsync(int id, string password, string cantidad)
         {
-            var response = await _httpClient.PostAsync($"/ingresardinero/{id}/{password}/{cantidad}", null);
+            var response = await _httpClient.GetAsync($"/ingresardinero/{id}/{password}/{cantidad}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<string?> ObtenerNombreAsync(int id, string password)
         {
-            var response = await _httpClient.PostAsync($"/obtenerNombre/{id}/{password}/", null);
+            var response = await _httpClient.GetAsync($"/obtenerNombre/{id}/{password}/");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsStringAsync();

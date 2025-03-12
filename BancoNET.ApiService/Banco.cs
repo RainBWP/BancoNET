@@ -36,6 +36,7 @@ namespace BancoNET.ApiService {
             foreach (var cuenta in cuentas)
             {
                 listaCuentas.Add(cuenta.ToString());
+
             }
             return listaCuentas;
         }

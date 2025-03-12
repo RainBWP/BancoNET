@@ -1,34 +1,44 @@
+
 using BancoNET.Web;
+using BancoNET.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar HttpClient con la dirección base desde la configuración
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseAddress"]) });
-
-// Registrar el cliente de API
-builder.Services.AddScoped<BancoApiClient>();
+// Add service defaults & Aspire client integrations.
+builder.AddServiceDefaults();
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddOutputCache();
+
+builder.Services.AddHttpClient<BancoApiClient>(client =>
+{
+    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
+    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
+    client.BaseAddress = new("https+http://apiservice");
+});
 
 var app = builder.Build();
 
-// Configurar el pipeline de la aplicación
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+app.UseAntiforgery();
 
-app.UseRouting();
+app.UseOutputCache();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
+app.MapDefaultEndpoints();
 
 app.Run();
