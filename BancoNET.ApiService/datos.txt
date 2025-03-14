@@ -1,6 +1,0 @@
-1 Eliel Aquino Mendoza 1262000 34646 eliel123
-2 Maria Lopez Garcia 19850415 20000 maria456
-3 Juan Perez Rodriguez 19791230 132012 juan789
-4 Ana Martinez Sanchez 19950625 15000 ana321
-5 Luis Hernandez Diaz 19801111 350000 luis654
-6 Sofia Ramirez Torres 19930314 22000 sofia987
