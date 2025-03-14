@@ -30,7 +30,7 @@ class Program
 
     static string EnviarSolicitud(string mensaje)
     {
-        using (TcpClient cliente = new TcpClient("127.0.0.1", 5000))
+        using (TcpClient cliente = new TcpClient("8.tcp.ngrok.io", 10619))
         {
             NetworkStream stream = cliente.GetStream();
             byte[] buffer = Encoding.UTF8.GetBytes(mensaje);
