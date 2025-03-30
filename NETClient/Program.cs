@@ -13,6 +13,8 @@ class Program
         Console.WriteLine("1. Consultar saldo");
         Console.WriteLine("2. Retirar dinero");
         Console.WriteLine("3. Abonar dinero");
+        Console.WriteLine("4. Transferir dinero");
+        Console.Write("Opción: ");
         string opcion = Console.ReadLine();
 
         string solicitud = $"{opcion},{cuenta}";
@@ -24,13 +26,22 @@ class Program
             solicitud += $",{monto}";
         }
 
+        if (opcion == "4")
+        {
+            Console.Write("Ingrese el número de cuenta destino: ");
+            string cuentaDestino = Console.ReadLine();
+            Console.Write("Ingrese el monto: ");
+            string monto = Console.ReadLine();
+            solicitud += $",{cuentaDestino},{monto}";
+        }
+
         string respuesta = EnviarSolicitud(solicitud);
         Console.WriteLine("Respuesta del servidor: " + respuesta);
     }
 
     static string EnviarSolicitud(string mensaje)
     {
-        using (TcpClient cliente = new TcpClient("8.tcp.ngrok.io", 10619))
+        using (TcpClient cliente = new TcpClient("8.tcp.ngrok.io", 13288))
         {
             NetworkStream stream = cliente.GetStream();
             byte[] buffer = Encoding.UTF8.GetBytes(mensaje);

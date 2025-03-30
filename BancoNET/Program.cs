@@ -79,7 +79,20 @@ class Program
                 cuentas[cuenta] += montoAbono;
                 GuardarDatos();
                 return $"Abono exitoso. Nuevo saldo: {cuentas[cuenta]:C}";
-
+            case "4": // Transferencia
+                if (partes.Length < 4) return "Monto o cuenta de destino no especificados";
+                string cuentaDestino = partes[2];
+                // Console.WriteLine($"{partes[0]} {partes[1]} {partes[2]} {partes[3]}");
+                if (!cuentas.ContainsKey(cuentaDestino)) return "Cuenta de destino no encontrada";
+                decimal montoTransferencia = Convert.ToDecimal(partes[3]);
+                if (cuentas[cuenta] >= montoTransferencia)
+                {
+                    cuentas[cuenta] -= montoTransferencia;
+                    cuentas[cuentaDestino] += montoTransferencia;
+                    GuardarDatos();
+                    return $"Transferencia exitosa. Nuevo saldo: {cuentas[cuenta]:C}\n Saldo de destino: {cuentas[cuentaDestino]:C}";
+                }
+                return "Fondos insuficientes para transferencia";
             default:
                 return "Opción no válida";
         }
