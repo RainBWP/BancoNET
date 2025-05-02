@@ -49,15 +49,6 @@
       "description": "Reembolso parcial",
       "timestamp": "2025-05-01T16:45:00Z",
       "status": "completed"
-    },
-    {
-      "fromAccountId": "1",
-      "toAccountId": "2",
-      "amount": 10.89,
-      "description": "asdf",
-      "timestamp": "2025-05-02T06:39:43.484Z",
-      "status": "completed",
-      "id": "QVrcy3B"
     }
   ]
 }
