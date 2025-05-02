@@ -157,7 +157,8 @@ input:focus {
 button {
   font-size: 1.2rem;
   padding: 1rem;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
+
   border: none;
   background-color: var(--quaternary-color);
   color: var(--text-color);

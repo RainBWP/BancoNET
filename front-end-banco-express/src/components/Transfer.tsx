@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import accountService from '../services/AccountServices';
 import Background from './background';
 
+import './Transfer.css';
+
 function Transfer() {
   const { accountId } = useParams();
   const navigate = useNavigate();
@@ -32,22 +34,33 @@ function Transfer() {
     setSuccess('');
     
     try {
-      // Add this method to your AccountServices or create a TransactionService
       if (!accountId) {
         throw new Error('Account ID is required');
       }
-      await accountService.transferMoney(accountId, toAccountId, amountValue, description);
-      setSuccess(`Transferencia exitosa de $${amountValue.toFixed(2)} a la cuenta ${toAccountId}`);
       
-      // Clear form
-      setToAccountId('');
-      setAmount('');
-      setDescription('');
+      const result = await accountService.transferMoney(
+        accountId, 
+        toAccountId, 
+        amountValue, 
+        description
+      );
       
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate(`/dashboard/${accountId}`);
-      }, 2000);
+      if (result.success) {
+        setSuccess(`Transferencia exitosa de $${amountValue.toFixed(2)} a la cuenta ${toAccountId}`);
+        
+        // Clear form
+        setToAccountId('');
+        setAmount('');
+        setDescription('');
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          navigate(`/dashboard/${accountId}`);
+        }, 2000);
+      } else {
+        // Handle specific failure reason from the service
+        setError(result.message);
+      }
     } catch (err) {
       setError('Error al procesar la transferencia. Por favor intente nuevamente.');
       console.error(err);
@@ -57,58 +70,60 @@ function Transfer() {
   };
   
   return (
-    <div className="transfer-container">
-        <Background></Background>
-      <h1>Transferencia Bancaria</h1>
-      
-      {error && <div className="error">{error}</div>}
-      {success && <div className="success">{success}</div>}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="toAccountId">Cuenta Destino:</label>
-          <input
-            type="text"
-            id="toAccountId"
-            value={toAccountId}
-            onChange={(e) => setToAccountId(e.target.value)}
-            required
-          />
-        </div>
+    <>
+      <div className="transfer-container">
+          <Background></Background>
+        <h1>Transferencia Bancaria</h1>
         
-        <div className="form-group">
-          <label htmlFor="amount">Monto:</label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
+        {error && <div className="error">{error}</div>}
+        {success && <div className="success">{success}</div>}
         
-        <div className="form-group">
-          <label htmlFor="description">Descripción:</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        
-        <div className="form-actions">
-          <button type="button" onClick={() => navigate(`/dashboard/${accountId}`)}>
-            Cancelar
-          </button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Procesando...' : 'Transferir'}
-          </button>
-        </div>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="toAccountId">Cuenta Destino:</label>
+            <input
+              type="text"
+              id="toAccountId"
+              value={toAccountId}
+              onChange={(e) => setToAccountId(e.target.value)}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="amount">Monto:</label>
+            <input
+              type="number"
+              id="amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min="0.01"
+              step="0.01"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="description">Descripción:</label>
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          
+          <div className="form-actions">
+            <button type="button" onClick={() => navigate(`/dashboard/${accountId}`)}>
+              Cancelar
+            </button>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Procesando...' : 'Transferir'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
 

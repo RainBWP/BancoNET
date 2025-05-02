@@ -52,7 +52,7 @@ function Dashboard() {
         <Background></Background>
       <div className="account-header">
         <p>Bienvenido, {account.ownerName}</p>
-        <button onClick={handleLogout}>Cerrar Sesión</button>
+        <button className='logout-button' onClick={handleLogout}>Cerrar Sesión</button>
         <h3>Saldo Actual</h3>
         <h4 className="balance-amount">${account.balance.toFixed(2)}</h4>
       </div>
