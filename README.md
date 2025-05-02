@@ -2,12 +2,6 @@
 
 ![BancoNET](image.webp)
 
-<style>
-    img {
-        border-radius:2rem;
-    }
-</style>
-
 ## Instalar con Git
 ```bash
 git clone https://github.com/RainBWP/BancoNET.git
