@@ -1,11 +1,10 @@
-import api from './api';
+import { mockDB } from '../mockData';
 
 export interface Account {
   id: string;
   accountNumber: string;
   balance: number;
   ownerName: string;
-  // Add other properties as needed
 }
 
 export interface LoginResponse {
@@ -13,7 +12,6 @@ export interface LoginResponse {
   user: {
     id: string;
     name: string;
-    // Other user properties
   };
 }
 
@@ -21,88 +19,100 @@ export interface TransferResponse {
   success: boolean;
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transaction?: any; // You could create a Transaction interface for better typing
+  transaction?: any;
 }
+
+// Simulate network delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const accountService = {
   // Get account info
   getAccount: async (accountId: string): Promise<Account> => {
-    const response = await api.get(`/accounts/${accountId}`);
-    return response.data;
+    await delay(500); // Simulate network delay
+    const account = mockDB.accounts.find(a => a.id === accountId);
+    if (!account) {
+      throw new Error('Account not found');
+    }
+    return account;
   },
   
   // Verify account exists
   verifyAccount: async (accountId: string): Promise<boolean> => {
-    try {
-      const response = await api.get(`/account_verifications/${accountId}`);
-      return response.data.exists;
-    } catch {
-        // Handle error (e.g., account not found)
-        console.error('Error verifying account:', Error);
-      return false;
-    }
+    await delay(500);
+    return mockDB.accounts.some(a => a.id === accountId);
   },
   
   // Login with account
   login: async (accountId: string): Promise<LoginResponse> => {
-    const response = await api.post('/auth/login', { accountId});
-    return response.data;
+    await delay(500);
+    const account = mockDB.accounts.find(a => a.id === accountId);
+    if (!account) {
+      throw new Error('Account not found');
+    }
+    
+    return {
+      token: (mockDB.tokens as Record<string, string>)[accountId] || 'mock-token',
+      user: {
+        id: account.id,
+        name: account.ownerName
+      }
+    };
   },
   
   // Get account transactions
   getTransactions: async (accountId: string) => {
-    const response = await api.get(`/accounts/${accountId}/transactions`);
-    return response.data;
+    await delay(500);
+    return mockDB.transactions.filter(
+      t => t.fromAccountId === accountId || t.toAccountId === accountId
+    );
   },
+  
+  // Transfer money between accounts
   transferMoney: async (fromAccountId: string, toAccountId: string, amount: number, description?: string): Promise<TransferResponse> => {
-    try {
-      // Step 1: Check if source account exists and has sufficient funds
-      const sourceAccount = await accountService.getAccount(fromAccountId);
-      
-      // Step 2: Check if destination account exists
-      let destinationExists = false;
-      try {
-        await accountService.getAccount(toAccountId);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        destinationExists = true;
-      } catch {
-        return {
-          success: false,
-          message: `La cuenta destino ${toAccountId} no existe.`
-        };
-      }
-      
-      // Step 3: Verify sufficient funds
-      if (sourceAccount.balance < amount) {
-        return {
-          success: false,
-          message: `Fondos insuficientes. Saldo actual: $${sourceAccount.balance.toFixed(2)}`
-        };
-      }
-      
-      // Step 4: If all validation passes, process the transaction
-      const response = await api.post('/transactions', {
-        fromAccountId,
-        toAccountId,
-        amount,
-        description: description || 'Transferencia',
-        timestamp: new Date().toISOString(),
-        status: 'completed'
-      });
-      
-      return {
-        success: true,
-        message: 'Transferencia completada exitosamente',
-        transaction: response.data
-      };
-    } catch (error) {
-      console.error('Error processing transfer:', error);
-      return {
-        success: false,
-        message: 'Error al procesar la transferencia. Por favor intente nuevamente.'
+    await delay(800);
+    
+    // Verify accounts exist
+    const sourceAccount = mockDB.accounts.find(a => a.id === fromAccountId);
+    const destAccount = mockDB.accounts.find(a => a.id === toAccountId);
+    
+    if (!sourceAccount) {
+      return { success: false, message: 'Cuenta origen no encontrada' };
+    }
+    
+    if (!destAccount) {
+      return { success: false, message: 'Cuenta destino no encontrada' };
+    }
+    
+    // Check sufficient funds
+    if (sourceAccount.balance < amount) {
+      return { 
+        success: false, 
+        message: `Fondos insuficientes. Saldo actual: $${sourceAccount.balance.toFixed(2)}` 
       };
     }
-  },
+    
+    // Perform transfer in mock DB
+    sourceAccount.balance -= amount;
+    destAccount.balance += amount;
+    
+    const newTransaction = {
+      id: `t${mockDB.transactions.length + 1}`,
+      fromAccountId,
+      toAccountId,
+      amount,
+      description: description || 'Transferencia',
+      timestamp: new Date().toISOString(),
+      status: 'completed'
+    };
+    
+    mockDB.transactions.push(newTransaction);
+    
+    return {
+      success: true,
+      message: 'Transferencia completada exitosamente',
+      transaction: newTransaction
+    };
+  }
 };
 
 export default accountService;
