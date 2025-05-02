@@ -27,7 +27,7 @@ export const accountService = {
   // Verify account exists
   verifyAccount: async (accountId: string): Promise<boolean> => {
     try {
-      const response = await api.get(`/accounts/verify/${accountId}`);
+      const response = await api.get(`/account_verifications/${accountId}`);
       return response.data.exists;
     } catch (error) {
         // Handle error (e.g., account not found)
@@ -46,7 +46,18 @@ export const accountService = {
   getTransactions: async (accountId: string) => {
     const response = await api.get(`/accounts/${accountId}/transactions`);
     return response.data;
-  }
+  },
+  transferMoney: async (fromAccountId: string, toAccountId: string, amount: number, description?: string) => {
+    const response = await api.post('/transactions', {
+      fromAccountId,
+      toAccountId,
+      amount,
+      description: description || 'Transferencia',
+      timestamp: new Date().toISOString(),
+      status: 'completed'
+    });
+    return response.data;
+  },
 };
 
 export default accountService;
