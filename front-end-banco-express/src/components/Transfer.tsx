@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import accountService from '../services/AccountServices';
-import Background from './background';
+import Background from './Background';
 
 import './Transfer.css';
 

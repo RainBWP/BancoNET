@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Background from './background';
+import Background from './Background';
 import dollarIcon from '../assets/dollar-circle-list-svgrepo-com.svg';
 import accountService from '../services/AccountServices';
 

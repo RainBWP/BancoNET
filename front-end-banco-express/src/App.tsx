@@ -5,7 +5,7 @@ import Login from './components/Login'; // Move your current App login logic her
 
 function App() {
   return (
-    <Router>
+    <Router basename="/BancoNET">
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard/:accountId" element={<Dashboard />} />

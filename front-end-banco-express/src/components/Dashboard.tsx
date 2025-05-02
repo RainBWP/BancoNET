@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import accountService, { Account } from '../services/AccountServices';
-import Background from './background';
+import Background from './Background';
 import TransactionItem from './TransactionItem'
 
 import './Dashboard.css'
