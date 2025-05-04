@@ -93,6 +93,12 @@ h2 {
 
 }
 
+.signup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 body {
   color: var(--text-color);
   line-height: 1.5;
@@ -168,4 +174,9 @@ button {
 }
 button:hover {
   transform: scale(1);
+}
+
+.github-btn {
+  margin: 0;
+  padding: 0;
 }
