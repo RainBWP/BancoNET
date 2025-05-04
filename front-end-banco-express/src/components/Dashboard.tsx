@@ -63,8 +63,8 @@ function Dashboard() {
           <button onClick={() => navigate(`/transfer/${accountId}`)}>
             Transferir Dinero
           </button>
-          <button>
-            handler test
+          <button onClick={() => navigate(`/deposit/${accountId}`)}>
+            Abonar Dinero "DEV ONLY"
           </button>
           <button>
             handler test
@@ -81,7 +81,7 @@ function Dashboard() {
           <p>No hay transacciones recientes</p>
         ) : (
           <ul className="transaction-list">
-            {transactions.slice(0, 5).reverse().map(transaction => (
+            {transactions.slice(0, 5).map(transaction => (
               <TransactionItem 
               key={transaction.id} 
               transaction={transaction} 

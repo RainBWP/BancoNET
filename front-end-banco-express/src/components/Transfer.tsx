@@ -86,22 +86,25 @@ function Transfer() {
               id="toAccountId"
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
+              placeholder='0000'
               required
             />
           </div>
           
-          <div className="form-group">
+            <div className="form-group">
             <label htmlFor="amount">Monto:</label>
             <input
-              type="number"
+              type="text"
               id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              min="0.01"
-              step="0.01"
+              value={amount ? `$${amount}` : ''}
+              onChange={(e) => {
+              const inputValue = e.target.value.replace(/^\$/, '');
+              setAmount(inputValue);
+              }}
+              placeholder="$0.00"
               required
             />
-          </div>
+            </div>
           
           <div className="form-group">
             <label htmlFor="description">Descripción:</label>
@@ -110,6 +113,8 @@ function Transfer() {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Transferencia a cuenta"
+              
             />
           </div>
           
