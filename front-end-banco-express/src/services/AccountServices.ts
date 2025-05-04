@@ -24,6 +24,12 @@ export interface TransferResponse {
   transaction?: any; // You could create a Transaction interface for better typing
 }
 
+export interface CreateAccountResponse {
+  success: boolean;
+  accountNumber: string;
+  message: string;
+}
+
 export const accountService = {
   // Get account info
   getAccount: async (accountId: string): Promise<Account> => {
@@ -48,6 +54,21 @@ export const accountService = {
     const response = await api.post('/auth/login', { accountId});
     return response.data;
   },
+
+  // DEV ONLY: Deposit money into account
+  deposit: async (accountId: string, amount: number): Promise<void> => {
+    await api.post(`/accounts/${accountId}/deposit`, { amount });
+  },
+
+  // Create a new account
+  createAccount: async (name: string, email: string, initialDeposit: number = 0): Promise<CreateAccountResponse> => {
+    const response = await api.post('/accounts', { 
+      name, 
+      email, 
+      initialDeposit 
+    });
+    return response.data;
+  },
   
   // Get account transactions
   getTransactions: async (accountId: string) => {
@@ -60,11 +81,9 @@ export const accountService = {
       const sourceAccount = await accountService.getAccount(fromAccountId);
       
       // Step 2: Check if destination account exists
-      let destinationExists = false;
       try {
         await accountService.getAccount(toAccountId);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        destinationExists = true;
       } catch {
         return {
           success: false,
