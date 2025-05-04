@@ -73,13 +73,21 @@ function Login() {
             onChange={(e) => setAccountId(e.target.value)}
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Procesando...' : 'Enviar'}
+            {loading ? 'Procesando...' : 'Iniciar Sesión'}
           </button>
         </form>
         {message && <p className="message">{message}</p>}
       </div>
 
-      <div>
+    <div className='signup-container'>
+      <h2>No tienes cuenta?</h2>
+      <p>Empieza a transferir con Nosotros</p>
+      <button onClick={() => navigate('/signup')}>
+        Crear Cuenta
+      </button>
+    </div>
+
+      <div className='github-container'>
         <a href="https://github.com/RainBWP/BancoNET/tree/FrontBank">Github Code</a>
       </div>
     </>
