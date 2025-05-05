@@ -15,5 +15,9 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '') // removes '/api' prefix
       }
     }
+  },preview: {
+    allowedHosts: [
+      '9e5d-2806-2f0-7001-804b-a173-1cc9-cd00-c750.ngrok-free.app'
+    ]
   }
 })
