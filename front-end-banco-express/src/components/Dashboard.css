@@ -50,16 +50,39 @@ h3 {
 .account-actions{
     
 }
-.action-buttons{
+.action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     aspect-ratio: 1 / 1;
 }
 
+@media (max-width: 370px) {
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        aspect-ratio: 21 / 9;
+    }
+    .account-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .transaction-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    div {
+        padding: 0%;
+    }
+}
+
 button {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .logout-button {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import accountService from '../services/AccountServices';
 import Background from './Background';
 import './Transfer.css'; // Reuse the transfer styling
@@ -7,16 +7,22 @@ import './Transfer.css'; // Reuse the transfer styling
 function Deposit() {
   const { accountId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation()
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+    // Determine if this is a deposit or withdrawal based on the URL path
+    const isWithdrawal = location.pathname.includes('/withdraw');
+    // const operationType = isWithdrawal ? 'withdraw' : 'deposit';
+    const actionText = isWithdrawal ? 'Retirar' : 'Abonar';
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!amount.trim()) {
-      setError('Por favor ingrese un monto para abonar');
+      setError(`Por favor ingrese un monto para ${isWithdrawal ? 'retirar' : 'abonar'}`);
       return;
     }
     
@@ -35,9 +41,13 @@ function Deposit() {
         throw new Error('Account ID is required');
       }
       
-      await accountService.deposit(accountId, amountValue);
+      if (isWithdrawal) {
+        await accountService.withdraw(accountId, amountValue);
+      } else {
+        await accountService.deposit(accountId, amountValue);
+      }
       
-      setSuccess(`Abono exitoso de $${amountValue.toFixed(2)} a su cuenta`);
+      setSuccess(`${isWithdrawal ? 'Retiro' : 'Abono'} exitoso de $${amountValue.toFixed(2)} ${isWithdrawal ? 'de' : 'a'} su cuenta`);
       
       // Clear form
       setAmount('');
@@ -58,8 +68,8 @@ function Deposit() {
     <>
       <div className="transfer-container">
         <Background />
-        <h1>ABONAR A CUENTA</h1>
-        <h2> Dev Only</h2>
+        <h1>{isWithdrawal ? 'RETIRAR DE CUENTA' : 'ABONAR A CUENTA'}</h1>
+        <h2>Dev Only</h2>
         
         {error && <div className="error">{error}</div>}
         {success && <div className="success">{success}</div>}
@@ -75,7 +85,7 @@ function Deposit() {
               min="0.01"
               step="0.01"
               required
-              placeholder="Ingrese el monto"
+              placeholder={`Ingrese el monto a ${isWithdrawal ? 'retirar' : 'abonar'}`}
             />
           </div>
           
@@ -90,7 +100,7 @@ function Deposit() {
               type="submit" 
               disabled={loading}
             >
-              {loading ? 'Procesando...' : 'Abonar'}
+              {loading ? 'Procesando...' : actionText}
             </button>
           </div>
         </form>

@@ -13,6 +13,8 @@ function App() {
         <Route path="/dashboard/:accountId" element={<Dashboard />} />
         <Route path="/transfer/:accountId" element={<Transfer />} />
         <Route path="/deposit/:accountId" element={<Deposit />} /> {/* Reusing Transfer component for Deposit */}
+        <Route path="/withdraw/:accountId" element={<Deposit />} /> {/* Reusing Transfer component for Withdraw */}
+        {/* Add a route for the signup page */}
         <Route path="/signup" element={<Signup />} /> {/* Assuming you have a SignUp component */}
         {/* Redirect any unknown routes to the login page */}
         <Route path="*" element={<Navigate to="/" replace />} />

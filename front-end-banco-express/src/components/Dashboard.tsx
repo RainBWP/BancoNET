@@ -66,8 +66,8 @@ function Dashboard() {
           <button onClick={() => navigate(`/deposit/${accountId}`)}>
             Abonar Dinero "DEV ONLY"
           </button>
-          <button>
-            handler test
+          <button onClick={() => navigate(`/withdraw/${accountId}`)}>
+            Retirar Dinero "DEV ONLY"
           </button>
           <button>
             handler test

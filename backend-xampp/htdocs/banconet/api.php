@@ -117,6 +117,29 @@ if ($method == 'POST' && isset($request[0]) && $request[0] == 'accounts' && isse
     exit;
 }
 
+// POST /accounts/:id/withdraw (retiro de dinero de una cuenta)
+if ($method == 'POST' && isset($request[0]) && $request[0] == 'accounts' && isset($request[1]) && isset($request[2]) && $request[2] == 'withdraw') {
+    $numero_cuenta = $request[1];
+    $data = json_decode(file_get_contents('php://input'), true);
+    $monto = $data['amount'] ?? 0;
+
+    if ($monto <= 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'El monto debe ser mayor a cero']);
+        exit;
+    }
+
+    $resultado = realizarRetiro($numero_cuenta, $monto);
+
+    if ($resultado['success']) {
+        echo json_encode(['message' => 'Retiro realizado correctamente']);
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => $resultado['error']]);
+    }
+    exit;
+}
+
 // GET /accounts/:id/transactions (alias de /transacciones/:numero_cuenta)
 if ($method == 'GET' && isset($request[0]) && $request[0] == 'accounts' && isset($request[1]) && 
     isset($request[2]) && $request[2] == 'transactions') {

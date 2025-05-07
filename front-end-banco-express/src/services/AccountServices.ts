@@ -60,6 +60,11 @@ export const accountService = {
     await api.post(`/accounts/${accountId}/deposit`, { amount });
   },
 
+  withdraw: async (accountId: string, amount: number): Promise<void> => {
+    await api.post(`/accounts/${accountId}/withdraw`, { amount });
+    return;
+  },
+
   // Create a new account
   createAccount: async (name: string, email: string, initialDeposit: number = 0): Promise<CreateAccountResponse> => {
     const response = await api.post('/accounts', { 
